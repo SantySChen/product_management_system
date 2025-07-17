@@ -45,31 +45,21 @@ userRouter.post(
 )
 
 userRouter.post(
-  '/update',
+  '/check-email',
   asyncHandler(async (req: Request, res: Response) => {
     const { email } = req.body;
 
-    const user = await UserModel.findOne({ email });
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
+    if (!email) {
+      res.status(400).json({ message: 'Email is required' });
+      return;
     }
 
-    const transporter = nodemailer.createTransport({
-      service: 'Gmail', 
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
+    const user = await UserModel.findOne({ email });
 
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: user.email,
-      subject: 'Reset Password',
-      text: 'Reset the password', 
-    });
-
-    res.json({ message: 'Recovery email sent' });
+    if (user) {
+      res.json({ exists: true });
+    } else {
+      res.json({ exists: false });
+    }
   })
 );

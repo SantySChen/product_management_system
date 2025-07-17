@@ -1,20 +1,19 @@
 import { Outlet } from 'react-router-dom'
 import './App.css'
-import { Container } from 'react-bootstrap'
 import Footer from './components/Footer'
+import Header from './components/Header'
+import { useState } from 'react'
 
 function App() {
- 
+ const [searchTerm, setSearchTerm] = useState('')
 
   return (
     <div>
-      <header>
-        hello
-      </header>
+      <Header onSearch={setSearchTerm}/>
       <main>
-        <Container>
-          <Outlet />
-        </Container>
+        
+        <Outlet context={{ searchTerm }}/>
+        
       </main>
       <Footer />
     </div>

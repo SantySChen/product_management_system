@@ -14,7 +14,7 @@ const SigninPage: React.FC = () => {
     const navigate = useNavigate()
     const { search } = useLocation()
     const redirectInUrl = new URLSearchParams(search).get('redirect')
-    const redirect = redirectInUrl ? redirectInUrl : '/'
+    const redirect = redirectInUrl || '/'
 
     const { state, dispatch } = useContext(Store)
     const { userInfo } = state;

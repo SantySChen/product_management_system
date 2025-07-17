@@ -21,7 +21,7 @@ const SignupPage: React.FC = () => {
     const { userInfo } = state
 
     useEffect(() => {
-        if (userInfo) {
+        if (userInfo && location.pathname !== '/signup') {
             navigate(redirect)
         }
     }, [navigate, redirect, userInfo])

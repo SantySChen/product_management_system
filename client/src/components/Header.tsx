@@ -3,16 +3,20 @@ import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { Store } from "../Store";
+import { useGetCartQuery } from "../hooks/cartHooks";
 
 type HeaderProps = {
     onSearch?: (value: string) => void;
+    onCartOpen?: () => void
 }
-const Header: React.FC<HeaderProps> = ({ onSearch }) => {
+const Header: React.FC<HeaderProps> = ({ onSearch, onCartOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isHomepage = location.pathname === '/'
   const { state, dispatch } = useContext(Store);
-  const { userInfo, cart } = state;
+  const { userInfo } = state;
+
+  const { data: cart } = useGetCartQuery()
 
   const handleAuthClick = () => {
     if (userInfo) {
@@ -26,6 +30,12 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onSearch?.(e.target.value)
   }
+
+  const handleCartClick = () => {
+    onCartOpen?.()
+  }
+
+  const cartTotalPrice = cart?.totalPrice ?? 0;
 
   return (
     <header style={{ backgroundColor: "#0e1320" }} className="text-white py-3">
@@ -59,9 +69,9 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           </div>
 
           {/* Cart */}
-          <div className="d-flex align-items-center" role="button">
+          <div className="d-flex align-items-center" role="button" onClick={handleCartClick}>
             <FaShoppingCart className="me-1" />
-            <span>${cart.totalPrice.toFixed(2)}</span>
+            <span>${cartTotalPrice.toFixed(2)}</span>
           </div>
         </div>
       </div>

@@ -1,9 +1,10 @@
 import { modelOptions, prop, getModelForClass, Ref } from '@typegoose/typegoose';
 import { User } from './userModel';
+import { Product } from './productModel';
 
 class CartItem {
   @prop({ required: true })
-  public _id?: string;
+  public product!: Ref<Product>;
 
   @prop()
   public image!: string;

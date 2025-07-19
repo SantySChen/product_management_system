@@ -9,12 +9,15 @@ import { getError } from '../utils';
 import { useGetProductsQuery, useSearchProductsQuery } from '../hooks/productHooks';
 import type { ApiError } from '../types/ApiError';
 import { Store } from '../Store';
+import { useGetCartQuery } from '../hooks/cartHooks';
 
 type ContextType = { searchTerm: string };
 
 export default function HomePage() {
   useDocumentTitle('Home');
   const navigate = useNavigate();
+  const { data: cart, isLoading: cartLoading } = useGetCartQuery()
+  const cartItems = cart?.cartItems ?? [];
   const { state } = useContext(Store);
   const { userInfo } = state;
 
@@ -28,6 +31,11 @@ export default function HomePage() {
     'price-asc': 'sort/price-asc',
     'price-desc': 'sort/price-desc',
   };
+
+  const quantityMap = cartItems.reduce((map, item) => {
+    map[item.product] = item.quantity;
+    return map;
+  }, {} as Record<string, number>);
 
   const {
     data: sortedData,
@@ -92,7 +100,11 @@ export default function HomePage() {
           <Row>
             {products?.map((product) => (
               <Col key={product._id} sm={6} md={4} lg={3} className="mb-4">
-                <ProductCard product={product} />
+                <ProductCard 
+                product={product}
+                quantity={quantityMap[product._id!] || 0}
+                cartLoading={cartLoading}
+                 />
               </Col>
             ))}
           </Row>

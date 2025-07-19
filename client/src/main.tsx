@@ -21,16 +21,17 @@ import HomePage from './pages/HomePage.tsx'
 import EditProductPage from './pages/EditProductPage.tsx'
 import ProtectedRoute from './components/ProtectedRoute.tsx'
 import { StoreProvider } from './Store.tsx'
+import ErrorPage from './pages/ErrorPage.tsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route path='/' element={<App />}>
+    <Route path='/' element={<App />} errorElement={<ErrorPage />}>
       <Route index element={<HomePage />} />
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         <Route path='addproduct' element={<AddProductPage />} />
         <Route path='edit/:id' element={<EditProductPage />} />
-        <Route path='product' element={<ProductPage />} />
+        <Route path='product/:id' element={<ProductPage />} />
       </Route>
       <Route path='signin' element={<SigninPage />} />
       <Route path='signup' element={<SignupPage />} />
@@ -40,7 +41,7 @@ const router = createBrowserRouter(
   )
 );
 
-const queryClient = new QueryClient()
+export const queryClient = new QueryClient()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

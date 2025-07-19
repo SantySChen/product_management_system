@@ -1,6 +1,6 @@
 export type CartItem = {
-    _id: string
-    image: string | undefined
+    product: string
+    image?: string | null
     name: string
     quantity: number
     countInStock: number

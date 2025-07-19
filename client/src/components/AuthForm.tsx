@@ -7,14 +7,16 @@ type AuthMode = 'signin' | 'signup' | 'update';
 interface AuthFormProps {
   mode: AuthMode;
   onSubmit: (data: { email: string; password: string }) => void;
+  checkEmail?: (email: string) => Promise<boolean>
 }
 
-const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit }) => {
+const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit, checkEmail }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [emailNotFound, setEmailNotFound] = useState(false)
 
   const navigate = useNavigate();
 
@@ -40,11 +42,20 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit }) => {
     return isValid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setEmailNotFound(false)
     if (!handleValidation()) return;
     if (mode === 'update') {
+      if (checkEmail) {
+        const exists = await checkEmail(email)
+        if(!exists) {
+          setEmailNotFound(true)
+          return;
+        }
+      }
       onSubmit({ email, password: '' });
+ 
     } else {
       onSubmit({ email, password });
     }
@@ -98,6 +109,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onSubmit }) => {
             <div className="invalid-feedback text-end">
               {emailError}
             </div>
+            {emailNotFound && (
+              <div className='text-danger text-end small mt-1'>
+                No resigtered email found.
+              </div>
+            )}
           </Form.Group>
 
           {mode !== 'update' && (

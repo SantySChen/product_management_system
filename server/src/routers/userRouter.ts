@@ -2,7 +2,7 @@ import express, { Request, Response } from 'express'
 import asyncHandler from 'express-async-handler'
 import bcrypt from 'bcryptjs'
 import { User, UserModel } from '../models/userModel'
-import { generateToken } from '../utils'
+import { generateToken, sendRecoveryEmail } from '../utils'
 import nodemailer from 'nodemailer'
 
 export const userRouter = express.Router()
@@ -61,5 +61,24 @@ userRouter.post(
     } else {
       res.json({ exists: false });
     }
+  })
+);
+
+userRouter.post(
+  '/send-recovery',
+  asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      res.status(400).json({ message: 'Email not registered' });
+      return;
+    }
+
+    const recoveryLink = "https://github.com/";
+
+    await sendRecoveryEmail(email, recoveryLink);
+
+    res.json({ message: 'Recovery email sent' });
   })
 );

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { User } from "./models/userModel";
 import { NextFunction, Request, Response } from 'express';
+import nodemailer from 'nodemailer'
 
 export const generateToken = (user: User) => {
     return jwt.sign(
@@ -50,4 +51,27 @@ export const isAuth = (
   } else {
     return res.status(401).json({ message: 'No Token Provided' });
   }
+};
+
+
+export const sendRecoveryEmail = async (to: string, link: string) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', 
+    auth: {
+      user: process.env.EMAIL_USER, 
+      pass: process.env.EMAIL_PASS, 
+    },
+  });
+
+  const mailOptions = {
+    from: `"YourApp" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: 'Password Recovery Link',
+    html: `
+      <p>Click the link below to reset your password:</p>
+      <a href="${link}">${link}</a>
+    `,
+  };
+
+  await transporter.sendMail(mailOptions);
 };
